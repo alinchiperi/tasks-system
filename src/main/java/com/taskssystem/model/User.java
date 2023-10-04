@@ -1,6 +1,5 @@
-package com.example.taskssystem.model;
+package com.taskssystem.model;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
