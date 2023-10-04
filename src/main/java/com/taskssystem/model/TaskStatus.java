@@ -1,4 +1,4 @@
-package com.example.taskssystem.model;
+package com.taskssystem.model;
 
 public enum TaskStatus {
     PENDING("Pending"),
