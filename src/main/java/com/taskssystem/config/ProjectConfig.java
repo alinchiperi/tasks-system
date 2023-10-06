@@ -26,8 +26,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-
 @Configuration
 public class ProjectConfig {
     private final RSAKeyProperties keys;
@@ -36,17 +34,21 @@ public class ProjectConfig {
         this.keys = keys;
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        auth -> {
-                            auth.requestMatchers(antMatcher("/api/auth/**")).permitAll();
+                        auth ->
+                        {
+                            auth.requestMatchers("api/auth/**").permitAll();
+                            auth.requestMatchers("api/admin/**").hasRole("ADMIN");
+                            auth.requestMatchers("api/user/**").hasAnyRole("ADMIN", "USER");
                             auth.anyRequest().authenticated();
                         }
                 );
+
+
         http.oauth2ResourceServer(
                 c -> c.jwt(
                         x -> x.jwtAuthenticationConverter(jwtAuthenticationConverter())
@@ -65,17 +67,20 @@ public class ProjectConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
-    public AuthenticationManager authManager(UserDetailsService detailsService){
+    public AuthenticationManager authManager(UserDetailsService detailsService) {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(detailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(daoAuthenticationProvider);
     }
+
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
     }
+
     @Bean
     public JwtEncoder jwtEncoder() {
         JWK jwk = new RSAKey.Builder(keys.getPublicKey()).privateKey(keys.getPrivateKey()).build();
