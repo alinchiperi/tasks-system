@@ -1,6 +1,7 @@
 package com.taskssystem.service;
 
 import com.taskssystem.dto.TaskDto;
+import com.taskssystem.exceptions.TaskNotFoundException;
 import com.taskssystem.model.Task;
 import com.taskssystem.model.User;
 import com.taskssystem.repository.TaskRepository;
@@ -36,8 +37,25 @@ public class TaskService {
         if (task.isPresent()) {
             return TaskDto.from(task.get());
         } else {
-            throw new UsernameNotFoundException("Task not found");
+            throw new TaskNotFoundException("Task not found");
         }
+
+    }
+
+    public void deleteTask(Integer id) {
+        taskRepository.deleteById(id);
+    }
+
+    public TaskDto updateTask(TaskDto newTask) {
+        Optional<Task> taskById = taskRepository.findById(newTask.getId());
+        if (taskById.isPresent()) {
+            Task task = taskById.get();
+            task.setTitle(newTask.getTitle());
+            task.setDescription(newTask.getDescription());
+            task.setDueDate(newTask.getDueDate());
+            return TaskDto.from(taskRepository.save(task));
+        }
+        return TaskDto.from(new Task());
 
     }
 }
