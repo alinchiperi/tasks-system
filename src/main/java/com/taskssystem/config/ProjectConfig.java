@@ -14,6 +14,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +26,9 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class ProjectConfig {
@@ -38,12 +42,16 @@ public class ProjectConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+
+
                 .authorizeHttpRequests(
                         auth ->
                         {
+                            auth.requestMatchers(toH2Console()).permitAll();
                             auth.requestMatchers("api/auth/**").permitAll();
                             auth.requestMatchers("api/user/*").hasAnyRole("User");
                             auth.requestMatchers("api/task/**", "api/task/*", "api/task/*/*").hasAnyRole("User");
+                            auth.requestMatchers("api/reminder/**", "api/reminder/*", "api/reminder/*/*").hasAnyRole("User");
                             auth.anyRequest().authenticated();
                         }
                 );
@@ -59,6 +67,10 @@ public class ProjectConfig {
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
+        //this is to enable h2 console
+        http.headers((headers) -> headers
+                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+        );
 
         return http.build();
     }
