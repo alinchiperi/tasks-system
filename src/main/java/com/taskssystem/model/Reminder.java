@@ -8,10 +8,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "reminders")
 public class Reminder {
     @Id
@@ -23,7 +27,7 @@ public class Reminder {
     private Task task;
 
     @Column(nullable = false)
-    private Date reminderDateTime;
+    private LocalDateTime reminderDateTime;
 
     @Column(nullable = false)
     private boolean sent;
