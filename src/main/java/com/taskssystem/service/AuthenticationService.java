@@ -30,17 +30,15 @@ public class AuthenticationService {
 
     public User register(String email, String password) {
         String encodedPass = passwordEncoder.encode(password);
-        log.info(encodedPass +" this is encoded");
+
         return userRepository.save(new User(email, encodedPass));
     }
 
     public LoginResponseDto login(String email, String password) {
        try {
-           log.info("this is login");
+
            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-           log.info("this is login2");
            String token = tokenService.generateJwt(auth);
-           log.info("Token is: " + token);
            return new LoginResponseDto(token);
        }catch (AuthenticationException e){
            log.info("catch clause ");

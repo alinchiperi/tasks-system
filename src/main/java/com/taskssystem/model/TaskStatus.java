@@ -4,7 +4,10 @@ public enum TaskStatus {
     PENDING("Pending"),
     IN_PROGRESS("In Progress"),
     COMPLETED("Completed"),
+    OVERDUE("Overdue"),
+
     CANCELED("Canceled");
+
     private final String name;
 
     TaskStatus(String name) {

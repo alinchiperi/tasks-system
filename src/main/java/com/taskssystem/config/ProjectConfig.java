@@ -42,8 +42,8 @@ public class ProjectConfig {
                         auth ->
                         {
                             auth.requestMatchers("api/auth/**").permitAll();
-                            auth.requestMatchers("api/admin/**").hasRole("ADMIN");
-                            auth.requestMatchers("api/user/**").hasAnyRole("ADMIN", "USER");
+                            auth.requestMatchers("api/user/*").hasAnyRole("User");
+                            auth.requestMatchers("api/task/**", "api/task/*", "api/task/*/*").hasAnyRole("User");
                             auth.anyRequest().authenticated();
                         }
                 );
