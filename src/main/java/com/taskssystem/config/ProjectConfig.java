@@ -47,7 +47,7 @@ public class ProjectConfig {
                 .authorizeHttpRequests(
                         auth ->
                         {
-                            auth.requestMatchers(toH2Console()).permitAll();
+//                            auth.requestMatchers(toH2Console()).permitAll();
                             auth.requestMatchers("api/auth/**").permitAll();
                             auth.requestMatchers("api/user/*").hasAnyRole("User");
                             auth.requestMatchers("api/task/**", "api/task/*", "api/task/*/*").hasAnyRole("User");
@@ -68,9 +68,9 @@ public class ProjectConfig {
         );
 
         //this is to enable h2 console
-        http.headers((headers) -> headers
-                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
-        );
+//        http.headers((headers) -> headers
+//                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+//        );
 
         return http.build();
     }
