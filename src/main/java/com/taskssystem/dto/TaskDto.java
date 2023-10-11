@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -16,7 +18,9 @@ public class TaskDto {
     private TaskStatus taskStatus;
     private LocalDateTime dueDate;
     private Integer userId;
-    public static TaskDto from(Task task){
+    private List<TagDto> tags;
+
+    public static TaskDto from(Task task) {
         return TaskDto.builder()
                 .id(task.getId())
                 .title(task.getTitle())
@@ -24,7 +28,14 @@ public class TaskDto {
                 .dueDate(task.getDueDate())
                 .taskStatus(task.getTaskStatus())
                 .userId(task.getUser().getId())
+                .tags(getTags(task))
                 .build();
+    }
+
+    private static List<TagDto> getTags(Task task) {
+        return task.getTags().stream()
+                .map(TagDto::from).
+                collect(Collectors.toList());
     }
 
 }

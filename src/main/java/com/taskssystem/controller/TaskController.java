@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @Slf4j
@@ -61,5 +65,15 @@ public class TaskController {
     @PatchMapping("{id}/update")
     public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto taskDto) {
         return new ResponseEntity<>(taskService.updateTask(taskDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/tags")
+    public ResponseEntity<Set<TaskDto>>getTaskByTags(@RequestBody List<String> tags){
+        Set<TaskDto> taskDtos = taskService.getTasksByTag(tags);
+        if (taskDtos.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(taskDtos);
+
     }
 }
