@@ -30,14 +30,14 @@ public class TaskController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Void> addTask(@RequestBody TaskDto taskDto) {
+    public ResponseEntity<String> addTask(@RequestBody TaskDto taskDto) {
         try {
             log.info("Add");
             taskService.createTask(taskDto);
-            return new ResponseEntity<>(HttpStatus.valueOf(200));
+            return new ResponseEntity<>("Task successful added", HttpStatus.valueOf(200));
         } catch (Exception e) {
             log.error("Unexpected error :(");
-            return new ResponseEntity<>(HttpStatus.valueOf(422));
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -68,7 +68,7 @@ public class TaskController {
     }
 
     @GetMapping("/tags")
-    public ResponseEntity<Set<TaskDto>>getTaskByTags(@RequestBody List<String> tags){
+    public ResponseEntity<Set<TaskDto>> getTaskByTags(@RequestBody List<String> tags) {
         Set<TaskDto> taskDtos = taskService.getTasksByTag(tags);
         if (taskDtos.isEmpty()) {
             return ResponseEntity.notFound().build();
