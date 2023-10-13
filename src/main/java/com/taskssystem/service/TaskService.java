@@ -36,7 +36,7 @@ public class TaskService {
 
     public void createTask(TaskDto taskDto) {
         Task task = new Task();
-        User user = userService.getCurrentUser().orElseThrow(() -> new UsernameNotFoundException("You need to login"));
+        User user = userService.findUserById(taskDto.getUserId()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         task.setUser(user);
         task.setTitle(taskDto.getTitle());
         task.setDueDate(taskDto.getDueDate());
