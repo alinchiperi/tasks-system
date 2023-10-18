@@ -94,4 +94,10 @@ public class TaskService {
                 .map(TaskDto::from)
                 .collect(Collectors.toSet());
     }
+
+    public List<Task> getTasksForToday(User user) {
+        LocalDate today = LocalDate.now();
+
+        return taskRepository.findTasksForUserAndDate(user.getId(), today);
+    }
 }

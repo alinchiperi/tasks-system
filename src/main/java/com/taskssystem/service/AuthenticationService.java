@@ -35,14 +35,15 @@ public class AuthenticationService {
     }
 
     public LoginResponseDto login(String email, String password) {
-       try {
+        try {
 
-           Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-           String token = tokenService.generateJwt(auth);
-           return new LoginResponseDto(token);
-       }catch (AuthenticationException e){
-           log.info("catch clause ");
-           return new LoginResponseDto("");
-       }
+            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            String token = tokenService.generateJwt(auth);
+            return new LoginResponseDto(token);
+        } catch (AuthenticationException e) {
+            log.info("catch clause ");
+            log.error("error is " + e.getMessage());
+            return new LoginResponseDto("");
+        }
     }
 }
