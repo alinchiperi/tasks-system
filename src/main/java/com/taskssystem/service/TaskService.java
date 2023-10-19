@@ -90,14 +90,19 @@ public class TaskService {
     }
 
     public Set<TaskDto> getTasksByTag(List<String> tags) {
-        return taskRepository.findByTags_NameIn(tags).stream()
+        List<Task> byTagsNameIn = taskRepository.findByTags_NameIn(tags);
+        return byTagsNameIn.stream()
                 .map(TaskDto::from)
                 .collect(Collectors.toSet());
     }
 
-    public List<Task> getTasksForToday(User user) {
+    public List<TaskDto> getTasksForToday(User user) {
         LocalDate today = LocalDate.now();
+        List<Task> tasksForUserAndDate = taskRepository.findTasksForUserAndDate(user.getId(), today);
+        return listToDto(tasksForUserAndDate);
+    }
 
-        return taskRepository.findTasksForUserAndDate(user.getId(), today);
+    private static List<TaskDto> listToDto(List<Task> taskList) {
+        return taskList.stream().map(TaskDto::from).collect(Collectors.toList());
     }
 }

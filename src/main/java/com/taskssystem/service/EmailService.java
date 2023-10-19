@@ -1,5 +1,6 @@
 package com.taskssystem.service;
 
+import com.taskssystem.dto.TaskDto;
 import com.taskssystem.model.Task;
 import com.taskssystem.model.User;
 import jakarta.mail.MessagingException;
@@ -27,7 +28,7 @@ public class EmailService {
     private void sendTaskForToday() throws MessagingException {
         List<User> users = userService.getAllUsers();
         for (User user : users) {
-            List<Task> tasksForToday = taskService.getTasksForToday(user);
+            List<TaskDto> tasksForToday = taskService.getTasksForToday(user);
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
