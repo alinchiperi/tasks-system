@@ -53,6 +53,7 @@ public class TaskService {
         //reminder logic
         LocalDate currentDate = LocalDate.now();
         LocalDate dueDate = taskDto.getDueDate().toLocalDate();
+        //// TODO: 23.10.2023 Create logic for automatically reminders
 //        if (!dueDate.isEqual(currentDate)) {
         Reminder reminder = new Reminder();
         reminder.setReminderDateTime(task.getDueDate().minusDays(1)); // 1 day before the task's due date
@@ -96,6 +97,7 @@ public class TaskService {
                 .collect(Collectors.toSet());
     }
 
+    //// TODO: 23.10.2023 Add @Scheduled and change email for sending
     public List<TaskDto> getTasksForToday(User user) {
         LocalDate today = LocalDate.now();
         List<Task> tasksForUserAndDate = taskRepository.findTasksForUserAndDate(user.getId(), today);
