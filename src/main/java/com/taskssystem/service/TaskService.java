@@ -1,6 +1,5 @@
 package com.taskssystem.service;
 
-import com.taskssystem.dto.TagDto;
 import com.taskssystem.dto.TaskDto;
 import com.taskssystem.exceptions.TaskNotFoundException;
 import com.taskssystem.model.Reminder;
@@ -13,7 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -49,21 +47,22 @@ public class TaskService {
 
         Task taskSaved = taskRepository.save(task);
 
-
+/*
         //reminder logic
+        //// TODO: 23.10.2023 Create logic for automatically reminders
         LocalDate currentDate = LocalDate.now();
         LocalDate dueDate = taskDto.getDueDate().toLocalDate();
-        //// TODO: 23.10.2023 Create logic for automatically reminders
 //        if (!dueDate.isEqual(currentDate)) {
         Reminder reminder = new Reminder();
         reminder.setReminderDateTime(task.getDueDate().minusDays(1)); // 1 day before the task's due date
         reminder.setTask(taskSaved);
         reminderRepository.save(reminder);
 //        }
+*/
     }
 
-    public TaskDto findById(Integer id) {
-        Optional<Task> task = taskRepository.findById(id);
+    public TaskDto findByIdDto(Integer id) {
+        Optional<Task> task = getById(id);
         if (task.isPresent()) {
             return TaskDto.from(task.get());
         } else {
@@ -72,12 +71,17 @@ public class TaskService {
 
     }
 
+    public Optional<Task> getById(Integer id) {
+        return taskRepository.findById(id);
+    }
+
+
     public void deleteTask(Integer id) {
         taskRepository.deleteById(id);
     }
 
     public TaskDto updateTask(TaskDto newTask) {
-        Optional<Task> taskById = taskRepository.findById(newTask.getId());
+        Optional<Task> taskById = getById(newTask.getId());
         if (taskById.isPresent()) {
             Task task = taskById.get();
             task.setTitle(newTask.getTitle());
