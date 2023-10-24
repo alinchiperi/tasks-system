@@ -12,8 +12,10 @@ import java.util.List;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Integer> {
-    List<Task> findByTags_Name(String tagName);
     List<Task> findByTags_NameIn(List<String> tags);
     @Query("SELECT t FROM Task t WHERE t.user.id = :userId AND DATE(t.dueDate) = :dueDate")
     List<Task> findTasksForUserAndDate(@Param("userId") Integer userId, @Param("dueDate") LocalDate dueDate);
+
+    List<Task> findByUserEmail(String email);
+
 }

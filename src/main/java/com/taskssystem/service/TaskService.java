@@ -108,6 +108,11 @@ public class TaskService {
         return listToDto(tasksForUserAndDate);
     }
 
+    public List<TaskDto> getTaskForUser(String email){
+        List<Task> byUserEmail = taskRepository.findByUserEmail(email);
+        return listToDto(byUserEmail);
+    }
+
     private static List<TaskDto> listToDto(List<Task> taskList) {
         return taskList.stream().map(TaskDto::from).collect(Collectors.toList());
     }
