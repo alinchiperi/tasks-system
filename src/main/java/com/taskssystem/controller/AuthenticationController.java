@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthenticationController {
     private final AuthenticationService authService;
 

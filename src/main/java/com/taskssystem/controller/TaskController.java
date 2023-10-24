@@ -81,11 +81,11 @@ public class TaskController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<TaskDto>> getUserTask(@AuthenticationPrincipal RegisterUserDto userDto, @RequestParam String email) {
-        log.info(" user dto " + userDto);
+    public ResponseEntity<List<TaskDto>> getUserTask( @RequestParam String email) {
+
         List<TaskDto> taskForUser = taskService.getTaskForUser(email);
         if (taskForUser.isEmpty())
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         else
             return ResponseEntity.ok(taskForUser);
     }
