@@ -5,13 +5,15 @@
 </head>
 <body>
 <h1>Today's Tasks</h1>
-<ul>
+<ol>
     <th:block th:each="task : ${tasks}">
         <li th:text="${task.title}">Task Title</li>
+        <ul>
         <li th:text="${task.description}">Task Description</li>
-        <li th:text="${task.dueDate}">Due Date</li>
+        <li th:text="${#temporals.format(task.dueDate, 'dd-MMM-yyyy, HH:mm')}">Due Date</li>
+        </ul>
         <br>
     </th:block>
-</ul>
+</ol>
 </body>
 </html>
