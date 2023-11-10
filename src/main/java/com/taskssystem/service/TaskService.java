@@ -32,7 +32,7 @@ public class TaskService {
         this.tagService = tagService;
     }
 
-    public void createTask(TaskDto taskDto) {
+    public TaskDto createTask(TaskDto taskDto) {
         Task task = new Task();
         User user = userService.findUserById(taskDto.getUserId()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         task.setUser(user);
@@ -46,6 +46,7 @@ public class TaskService {
         task.setTags(tags);
 
         Task taskSaved = taskRepository.save(task);
+        return TaskDto.from(taskSaved);
 
 /*
         //reminder logic

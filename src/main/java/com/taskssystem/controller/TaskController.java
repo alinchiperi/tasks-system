@@ -34,14 +34,14 @@ public class TaskController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addTask(@RequestBody TaskDto taskDto) {
+    public ResponseEntity<TaskDto> addTask(@RequestBody TaskDto taskDto) {
         try {
             log.info("Add");
-            taskService.createTask(taskDto);
-            return new ResponseEntity<>("Task successful added", HttpStatus.valueOf(200));
+            TaskDto task = taskService.createTask(taskDto);
+            return new ResponseEntity<>(task, HttpStatus.valueOf(200));
         } catch (Exception e) {
             log.error("Unexpected error :(");
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(TaskDto.builder().build(), HttpStatus.BAD_REQUEST);
         }
     }
 

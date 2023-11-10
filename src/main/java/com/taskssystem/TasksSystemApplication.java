@@ -30,8 +30,8 @@ public class TasksSystemApplication {
     CommandLineRunner runner(UserRepository userRepository, PasswordEncoder passwordEncoder, TaskRepository taskRepository) {
         return args -> {
             User user = userRepository.save(new User("chiperialin@yahoo.com", passwordEncoder.encode("password")));
-            LocalDateTime date = LocalDateTime.now();
-            LocalDateTime date2 = LocalDateTime.now().plusHours(1L);
+            LocalDateTime date = LocalDateTime.now().plusHours(5L);
+            LocalDateTime date2 = LocalDateTime.now().plusHours(6L);
             List<Tag> list = new ArrayList<>();
             taskRepository.save(new Task(1, "This is a task" ,  "This is a description", date, TaskStatus.PENDING, user, list ));
             taskRepository.save(new Task(2, "This is a task2" ,  "This is a description2", date2, TaskStatus.PENDING, user, list ));
