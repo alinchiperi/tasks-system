@@ -5,9 +5,11 @@ import com.taskssystem.exceptions.TaskNotFoundException;
 import com.taskssystem.model.Reminder;
 import com.taskssystem.model.Tag;
 import com.taskssystem.model.Task;
+import com.taskssystem.model.TaskStatus;
 import com.taskssystem.model.User;
 import com.taskssystem.repository.ReminderRepository;
 import com.taskssystem.repository.TaskRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -116,5 +118,12 @@ public class TaskService {
 
     private static List<TaskDto> listToDto(List<Task> taskList) {
         return taskList.stream().map(TaskDto::from).collect(Collectors.toList());
+    }
+
+    public TaskDto completeTask(Integer id) {
+        Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found " +id));
+        task.setTaskStatus(TaskStatus.COMPLETED);
+        Task taskSaved = taskRepository.save(task);
+        return TaskDto.from(task);
     }
 }

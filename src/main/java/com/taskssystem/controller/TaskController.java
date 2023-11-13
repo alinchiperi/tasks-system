@@ -81,12 +81,22 @@ public class TaskController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<TaskDto>> getUserTask( @RequestParam String email) {
+    public ResponseEntity<List<TaskDto>> getUserTask(@RequestParam String email) {
 
         List<TaskDto> taskForUser = taskService.getTaskForUser(email);
         if (taskForUser.isEmpty())
             return ResponseEntity.noContent().build();
         else
             return ResponseEntity.ok(taskForUser);
+    }
+
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<TaskDto> completeTask(@PathVariable Integer id) {
+        try {
+            TaskDto taskDto = taskService.completeTask(id);
+            return new ResponseEntity<>(taskDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(TaskDto.builder().build(), HttpStatus.BAD_REQUEST);
+        }
     }
 }
