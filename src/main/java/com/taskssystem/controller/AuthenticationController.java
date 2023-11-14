@@ -4,12 +4,15 @@ import com.taskssystem.dto.LoginResponseDto;
 import com.taskssystem.dto.RegisterUserDto;
 import com.taskssystem.model.User;
 import com.taskssystem.service.AuthenticationService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.AuthenticationException;
 import java.util.Arrays;
 
 @RestController
@@ -27,7 +30,11 @@ public class AuthenticationController {
         return authService.register(body.getEmail(), body.getPassword());
     }
     @PostMapping("/login")
-    public LoginResponseDto login(@RequestBody RegisterUserDto body){
-        return authService.login(body.getEmail(), body.getPassword());
+    public ResponseEntity<LoginResponseDto> login(@RequestBody RegisterUserDto body){
+            LoginResponseDto login = authService.login(body.getEmail(), body.getPassword());
+        if (login.getToken().equals("")){
+            return new ResponseEntity<>(login,HttpStatus.NOT_FOUND);
+        }
+        else return new ResponseEntity<>(login, HttpStatus.OK);
     }
 }
