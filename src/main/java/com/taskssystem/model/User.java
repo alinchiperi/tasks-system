@@ -34,11 +34,18 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
+    private int maxTasks = 10;
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
+    public User(String email, String password, int maxTasks) {
+        this.email = email;
+        this.password = password;
+        this.maxTasks = maxTasks;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -10,7 +10,6 @@ import com.taskssystem.model.User;
 import com.taskssystem.repository.ReminderRepository;
 import com.taskssystem.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +27,6 @@ public class TaskService {
     private final ReminderRepository reminderRepository;
     private final TagService tagService;
 
-    @Value("${max.tasks}")
-    private int maxNumberOfTasks;
-
 
     public TaskService(TaskRepository taskRepository, UserService userService, ReminderRepository reminderRepository, TagService tagService) {
         this.taskRepository = taskRepository;
@@ -45,8 +41,7 @@ public class TaskService {
 
         List<Task> tasksForUserExcludingStatuses = taskRepository.findTasksForUserExcludingStatuses(user.getId(), List.of(TaskStatus.COMPLETED, TaskStatus.CANCELED));
 
-        int n = maxNumberOfTasks;
-        if (tasksForUserExcludingStatuses.size()>= n ){
+        if (tasksForUserExcludingStatuses.size() >= user.getMaxTasks()) {
             throw new MaxTasksException();
         }
 
