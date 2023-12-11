@@ -40,7 +40,7 @@ public class TaskController {
             TaskDto task = taskService.createTask(taskDto);
             return new ResponseEntity<>(task, HttpStatus.valueOf(200));
         } catch (Exception e) {
-            log.error("Unexpected error :(");
+            log.error("Unexpected error :(  "+e.getMessage());
             return new ResponseEntity<>(TaskDto.builder().build(), HttpStatus.BAD_REQUEST);
         }
     }

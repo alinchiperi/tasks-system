@@ -1,15 +1,16 @@
 package com.taskssystem.service;
 
 import com.taskssystem.dto.TaskDto;
+import com.taskssystem.exceptions.MaxTasksException;
 import com.taskssystem.exceptions.TaskNotFoundException;
-import com.taskssystem.model.Reminder;
 import com.taskssystem.model.Tag;
 import com.taskssystem.model.Task;
 import com.taskssystem.model.TaskStatus;
 import com.taskssystem.model.User;
 import com.taskssystem.repository.ReminderRepository;
 import com.taskssystem.repository.TaskRepository;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class TaskService {
     private final TaskRepository taskRepository;
     private final UserService userService;
     private final ReminderRepository reminderRepository;
     private final TagService tagService;
+
+    @Value("${max.tasks}")
+    private int maxNumberOfTasks;
 
 
     public TaskService(TaskRepository taskRepository, UserService userService, ReminderRepository reminderRepository, TagService tagService) {
@@ -35,8 +40,17 @@ public class TaskService {
     }
 
     public TaskDto createTask(TaskDto taskDto) {
-        Task task = new Task();
+
         User user = userService.findUserById(taskDto.getUserId()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        List<Task> tasksForUserExcludingStatuses = taskRepository.findTasksForUserExcludingStatuses(user.getId(), List.of(TaskStatus.COMPLETED, TaskStatus.CANCELED));
+
+        int n = maxNumberOfTasks;
+        if (tasksForUserExcludingStatuses.size()>= n ){
+            throw new MaxTasksException();
+        }
+
+        Task task = new Task();
         task.setUser(user);
         task.setTitle(taskDto.getTitle());
         task.setDueDate(taskDto.getDueDate());
@@ -48,6 +62,7 @@ public class TaskService {
         task.setTags(tags);
 
         Task taskSaved = taskRepository.save(task);
+
         return TaskDto.from(taskSaved);
 
 /*
@@ -111,7 +126,7 @@ public class TaskService {
         return listToDto(tasksForUserAndDate);
     }
 
-    public List<TaskDto> getTaskForUser(String email){
+    public List<TaskDto> getTaskForUser(String email) {
         List<Task> byUserEmail = taskRepository.findByUserEmail(email);
         return listToDto(byUserEmail);
     }
@@ -121,7 +136,7 @@ public class TaskService {
     }
 
     public TaskDto completeTask(Integer id) {
-        Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found " +id));
+        Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found " + id));
         task.setTaskStatus(TaskStatus.COMPLETED);
         Task taskSaved = taskRepository.save(task);
         return TaskDto.from(task);

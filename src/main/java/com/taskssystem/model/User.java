@@ -34,8 +34,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
-//    private Integer maxTasks = 5;
-
     public User(String email, String password) {
         this.email = email;
         this.password = password;
