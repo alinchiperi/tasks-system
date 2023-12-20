@@ -3,9 +3,15 @@ package com.taskssystem.controller;
 import com.taskssystem.dto.TaskDto;
 import com.taskssystem.model.Task;
 import com.taskssystem.model.User;
+import com.taskssystem.repository.UserRepository;
 import com.taskssystem.service.TaskService;
 import com.taskssystem.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
-
+@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -25,9 +31,18 @@ public class UserController {
         this.userService = userService;
         this.taskService = taskService;
     }
-    @GetMapping("/dummy")
-    public User getCurrentUser(){
-        return userService.getCurrentUser().orElse(new User());
+
+    @DeleteMapping("{id}/delete")
+    public ResponseEntity<Void>delete(@PathVariable("id") Integer id){
+        Optional<User> user = userService.findUserById(id);
+        log.info("controller");
+        if (user.isPresent() && user.get().isActive()){
+            userService.deleteUser(user.get());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/current")
