@@ -36,6 +36,8 @@ public class User implements UserDetails {
 
     private int maxTasks = 10;
 
+    private boolean isActive = true ;
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;
