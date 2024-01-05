@@ -7,6 +7,7 @@ import com.taskssystem.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,9 +29,12 @@ import java.util.Set;
 @CrossOrigin(origins = {"http://localhost:4200"}, maxAge = 3600)
 public class TaskController {
     private final TaskService taskService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public TaskController(TaskService taskService) {
+
+    public TaskController(TaskService taskService, KafkaTemplate<String, String> kafkaTemplate) {
         this.taskService = taskService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @PostMapping("/add")
@@ -40,7 +44,7 @@ public class TaskController {
             TaskDto task = taskService.createTask(taskDto);
             return new ResponseEntity<>(task, HttpStatus.valueOf(200));
         } catch (Exception e) {
-            log.error("Unexpected error :(  "+e.getMessage());
+            log.error("Unexpected error :(  " + e.getMessage());
             return new ResponseEntity<>(TaskDto.builder().build(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -94,6 +98,7 @@ public class TaskController {
     public ResponseEntity<TaskDto> completeTask(@PathVariable Integer id) {
         try {
             TaskDto taskDto = taskService.completeTask(id);
+            kafkaTemplate.send("tasks-system", "task with id " + id + " was completed");
             return new ResponseEntity<>(taskDto, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(TaskDto.builder().build(), HttpStatus.BAD_REQUEST);
