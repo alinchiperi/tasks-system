@@ -9,6 +9,7 @@ import com.taskssystem.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,10 +27,13 @@ public class UserController {
 
     private final UserService userService;
     private final TaskService taskService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public UserController(UserService userService, TaskService taskService) {
+
+    public UserController(UserService userService, TaskService taskService, KafkaTemplate<String, String> kafkaTemplate) {
         this.userService = userService;
         this.taskService = taskService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @DeleteMapping("{id}/delete")
