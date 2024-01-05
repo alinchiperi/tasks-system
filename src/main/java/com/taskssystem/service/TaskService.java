@@ -101,6 +101,13 @@ public class TaskService {
             task.setDescription(newTask.getDescription());
             task.setDueDate(newTask.getDueDate());
             task.setTaskStatus(newTask.getTaskStatus());
+
+
+
+            List<Tag> tags = tagService.tagsFrom(newTask.getTags());
+            task.setTags(tags);
+
+
             return TaskDto.from(taskRepository.save(task));
         }
         return TaskDto.from(new Task());
