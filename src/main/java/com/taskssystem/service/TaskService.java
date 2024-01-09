@@ -10,6 +10,9 @@ import com.taskssystem.model.User;
 import com.taskssystem.repository.ReminderRepository;
 import com.taskssystem.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +29,16 @@ public class TaskService {
     private final UserService userService;
     private final ReminderRepository reminderRepository;
     private final TagService tagService;
+    private final CacheManager cacheManager;
 
 
-    public TaskService(TaskRepository taskRepository, UserService userService, ReminderRepository reminderRepository, TagService tagService) {
+
+    public TaskService(TaskRepository taskRepository, UserService userService, ReminderRepository reminderRepository, TagService tagService, CacheManager cacheManager) {
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.reminderRepository = reminderRepository;
         this.tagService = tagService;
+        this.cacheManager = cacheManager;
     }
 
     public TaskDto createTask(TaskDto taskDto) {
@@ -84,6 +90,8 @@ public class TaskService {
 
     }
 
+
+    @Cacheable(value = "tasks", key = "#id")
     public Optional<Task> getById(Integer id) {
         return taskRepository.findById(id);
     }
@@ -95,13 +103,13 @@ public class TaskService {
 
     public TaskDto updateTask(TaskDto newTask) {
         Optional<Task> taskById = getById(newTask.getId());
+        Cache cache = cacheManager.getCache("yourCacheName");
         if (taskById.isPresent()) {
             Task task = taskById.get();
             task.setTitle(newTask.getTitle());
             task.setDescription(newTask.getDescription());
             task.setDueDate(newTask.getDueDate());
             task.setTaskStatus(newTask.getTaskStatus());
-
 
 
             List<Tag> tags = tagService.tagsFrom(newTask.getTags());
@@ -141,6 +149,6 @@ public class TaskService {
         Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found " + id));
         task.setTaskStatus(TaskStatus.COMPLETED);
         Task taskSaved = taskRepository.save(task);
-        return TaskDto.from(task);
+        return TaskDto.from(taskSaved);
     }
 }
