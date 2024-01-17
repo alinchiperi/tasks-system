@@ -1,6 +1,5 @@
 package com.taskssystem.controller;
 
-import com.taskssystem.dto.RegisterUserDto;
 import com.taskssystem.dto.TaskDto;
 import com.taskssystem.exceptions.TaskNotFoundException;
 import com.taskssystem.service.TaskService;
@@ -8,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -87,7 +85,7 @@ public class TaskController {
     @GetMapping("/all")
     public ResponseEntity<List<TaskDto>> getUserTask(@RequestParam String email) {
 
-        List<TaskDto> taskForUser = taskService.getTaskForUser(email);
+        List<TaskDto> taskForUser = taskService.getUncompletedTaskForUser(email);
         if (taskForUser.isEmpty())
             return ResponseEntity.noContent().build();
         else

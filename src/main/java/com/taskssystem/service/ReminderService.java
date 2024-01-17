@@ -6,25 +6,32 @@ import com.taskssystem.exceptions.TaskNotFoundException;
 import com.taskssystem.model.Reminder;
 import com.taskssystem.model.Task;
 import com.taskssystem.model.TaskStatus;
+import com.taskssystem.model.User;
 import com.taskssystem.repository.ReminderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
 public class ReminderService {
     private final ReminderRepository reminderRepository;
     private final TaskService taskService;
+    private final UserService userService;
 
-    public ReminderService(ReminderRepository reminderRepository, TaskService taskService) {
+    public ReminderService(ReminderRepository reminderRepository, TaskService taskService, UserService userService) {
         this.reminderRepository = reminderRepository;
         this.taskService = taskService;
+        this.userService = userService;
     }
 
 
@@ -32,8 +39,18 @@ public class ReminderService {
         LocalDateTime now = LocalDateTime.now();
         List<TaskStatus> excludedStatuses = Arrays.asList(TaskStatus.CANCELED, TaskStatus.COMPLETED);
 
-        List<Reminder> dueReminders = reminderRepository.findByReminderDateTimeBeforeAndSentFalseAndTaskTaskStatusNotIn(now, excludedStatuses);
-        return dueReminders.stream().map(ReminderDto::from).collect(Collectors.toList());
+//        List<Reminder> dueReminders = reminderRepository.findByReminderDateTimeBeforeAndSentFalseAndTaskTaskStatusNotIn(now, excludedStatuses);
+        List<Reminder> dueReminders = reminderRepository.findAll();
+
+        Optional<User> currentUser = userService.getCurrentUser();
+        List<Reminder> userReminder = new ArrayList<>();
+        if (currentUser.isPresent()) {
+            int userId = currentUser.get().getId();
+            userReminder = dueReminders.stream().filter(r -> (r.getTask().getUser().getId() == userId))
+                    .filter(r -> !r.isSent())
+                    .toList();
+        }
+        return userReminder.stream().map(ReminderDto::from).collect(toList());
     }
 
     public List<Reminder> getAllReminders() {

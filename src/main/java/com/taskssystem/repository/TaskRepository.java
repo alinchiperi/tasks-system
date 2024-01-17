@@ -21,5 +21,4 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     @Query("SELECT t FROM Task t WHERE t.user.id = :userId AND t.taskStatus NOT IN (:excludedStatuses)")
     List<Task> findTasksForUserExcludingStatuses(@Param("userId") Integer userId, @Param("excludedStatuses") List<TaskStatus> excludedStatuses);
 
-
 }

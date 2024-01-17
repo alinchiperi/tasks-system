@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +31,6 @@ public class TaskService {
     private final ReminderRepository reminderRepository;
     private final TagService tagService;
     private final CacheManager cacheManager;
-
 
 
     public TaskService(TaskRepository taskRepository, UserService userService, ReminderRepository reminderRepository, TagService tagService, CacheManager cacheManager) {
@@ -90,12 +90,10 @@ public class TaskService {
 
     }
 
-
     @Cacheable(value = "tasks", key = "#id")
     public Optional<Task> getById(Integer id) {
         return taskRepository.findById(id);
     }
-
 
     public void deleteTask(Integer id) {
         taskRepository.deleteById(id);
@@ -103,19 +101,15 @@ public class TaskService {
 
     public TaskDto updateTask(TaskDto newTask) {
         Optional<Task> taskById = getById(newTask.getId());
-        Cache cache = cacheManager.getCache("yourCacheName");
+
         if (taskById.isPresent()) {
             Task task = taskById.get();
             task.setTitle(newTask.getTitle());
             task.setDescription(newTask.getDescription());
             task.setDueDate(newTask.getDueDate());
             task.setTaskStatus(newTask.getTaskStatus());
-
-
             List<Tag> tags = tagService.tagsFrom(newTask.getTags());
             task.setTags(tags);
-
-
             return TaskDto.from(taskRepository.save(task));
         }
         return TaskDto.from(new Task());
@@ -140,6 +134,16 @@ public class TaskService {
         List<Task> byUserEmail = taskRepository.findByUserEmail(email);
         return listToDto(byUserEmail);
     }
+
+    public List<TaskDto> getUncompletedTaskForUser(String email) {
+        Optional<User> userByEmail = userService.findUserByEmail(email);
+        if (userByEmail.isPresent()) {
+            List<Task> byUserEmail = taskRepository.findTasksForUserExcludingStatuses(userByEmail.get().getId(), List.of(TaskStatus.COMPLETED, TaskStatus.CANCELED));
+            return listToDto(byUserEmail);
+        }
+        return new ArrayList<>();
+    }
+
 
     private static List<TaskDto> listToDto(List<Task> taskList) {
         return taskList.stream().map(TaskDto::from).collect(Collectors.toList());
