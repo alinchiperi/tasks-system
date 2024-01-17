@@ -37,6 +37,7 @@ public class UserService implements UserDetailsService {
         return "";
     }
 
+
     public Optional<User> getCurrentUser() {
         String userName = getCurrentUserName();
         if (!userName.equals("")) {
@@ -47,6 +48,9 @@ public class UserService implements UserDetailsService {
 
     public Optional<User> findUserById(Integer id) {
         return userRepository.findById(id);
+    }
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
