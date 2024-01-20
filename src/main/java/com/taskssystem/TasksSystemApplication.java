@@ -30,7 +30,7 @@ public class TasksSystemApplication {
     @Bean
     CommandLineRunner runner(UserRepository userRepository, PasswordEncoder passwordEncoder, TaskRepository taskRepository) {
         return args -> {
-            User user = userRepository.save(new User("chiperialin@yahoo.com", passwordEncoder.encode("password"),15 ));
+            User user = userRepository.save(new User("chiperialin@yahoo.com", passwordEncoder.encode("password") ));
             LocalDateTime date = LocalDateTime.now().plusHours(5L);
             LocalDateTime date2 = LocalDateTime.now().plusHours(6L);
             List<Tag> list = new ArrayList<>();

@@ -3,6 +3,8 @@ package com.taskssystem.model;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,19 +36,21 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
-    private int maxTasks = 10;
+    @Enumerated(EnumType.STRING)
+    private SubscriptionLevel subscriptionLevel = SubscriptionLevel.FREE;
 
-    private boolean isActive = true ;
+
+    private boolean isActive = true;
 
     public User(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public User(String email, String password, int maxTasks) {
+    public User(String email, String password, SubscriptionLevel subscriptionLevel) {
         this.email = email;
         this.password = password;
-        this.maxTasks = maxTasks;
+        this.subscriptionLevel = subscriptionLevel;
     }
 
     @Override

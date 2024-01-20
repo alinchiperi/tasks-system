@@ -1,5 +1,6 @@
 package com.taskssystem.service;
 
+import com.taskssystem.model.SubscriptionLevel;
 import com.taskssystem.model.User;
 import com.taskssystem.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -66,5 +67,14 @@ public class UserService implements UserDetailsService {
         log.info("User");
         user.setActive(false);
         userRepository.save(user);
+    }
+
+    public void upgradeToPremium(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()){
+            User premiumUser = user.get();
+            premiumUser.setSubscriptionLevel(SubscriptionLevel.PREMIUM);
+            userRepository.save(premiumUser);
+        }
     }
 }

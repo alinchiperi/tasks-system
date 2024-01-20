@@ -3,6 +3,7 @@ package com.taskssystem.service;
 import com.taskssystem.dto.TaskDto;
 import com.taskssystem.exceptions.MaxTasksException;
 import com.taskssystem.exceptions.TaskNotFoundException;
+import com.taskssystem.model.SubscriptionLevel;
 import com.taskssystem.model.Tag;
 import com.taskssystem.model.Task;
 import com.taskssystem.model.TaskStatus;
@@ -10,6 +11,7 @@ import com.taskssystem.model.User;
 import com.taskssystem.repository.ReminderRepository;
 import com.taskssystem.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,6 +33,8 @@ public class TaskService {
     private final ReminderRepository reminderRepository;
     private final TagService tagService;
     private final CacheManager cacheManager;
+    @Value("${max}")
+    private int maxTasks ;
 
 
     public TaskService(TaskRepository taskRepository, UserService userService, ReminderRepository reminderRepository, TagService tagService, CacheManager cacheManager) {
@@ -47,7 +51,7 @@ public class TaskService {
 
         List<Task> tasksForUserExcludingStatuses = taskRepository.findTasksForUserExcludingStatuses(user.getId(), List.of(TaskStatus.COMPLETED, TaskStatus.CANCELED));
 
-        if (tasksForUserExcludingStatuses.size() >= user.getMaxTasks()) {
+        if (tasksForUserExcludingStatuses.size() >= maxTasks && user.getSubscriptionLevel().equals(SubscriptionLevel.FREE)) {
             throw new MaxTasksException();
         }
 
@@ -66,18 +70,7 @@ public class TaskService {
 
         return TaskDto.from(taskSaved);
 
-/*
-        //reminder logic
-        //// TODO: 23.10.2023 Create logic for automatically reminders
-        LocalDate currentDate = LocalDate.now();
-        LocalDate dueDate = taskDto.getDueDate().toLocalDate();
-//        if (!dueDate.isEqual(currentDate)) {
-        Reminder reminder = new Reminder();
-        reminder.setReminderDateTime(task.getDueDate().minusDays(1)); // 1 day before the task's due date
-        reminder.setTask(taskSaved);
-        reminderRepository.save(reminder);
-//        }
-*/
+
     }
 
     public TaskDto findByIdDto(Integer id) {
