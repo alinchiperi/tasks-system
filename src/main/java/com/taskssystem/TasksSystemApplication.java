@@ -33,9 +33,11 @@ public class TasksSystemApplication {
             User user = userRepository.save(new User("chiperialin@yahoo.com", passwordEncoder.encode("password") ));
             LocalDateTime date = LocalDateTime.now().plusHours(5L);
             LocalDateTime date2 = LocalDateTime.now().plusHours(6L);
-            List<Tag> list = new ArrayList<>();
+            LocalDateTime date3 = LocalDateTime.now().plusDays(1L);
+            List<Tag> list = new ArrayList<>(List.of(new Tag(1,"imporatnt")));
             taskRepository.save(new Task(1, "This is a task" ,  "This is a description", date, TaskStatus.PENDING, user, list ));
             taskRepository.save(new Task(2, "This is a task2" ,  "This is a description2", date2, TaskStatus.PENDING, user, list ));
+            taskRepository.save(new Task(3, "This is a task3" ,  "This is a description3", date3, TaskStatus.PENDING, user, list ));
 
         };
     }

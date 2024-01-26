@@ -31,6 +31,7 @@ public class EmailService {
 
 
     @Scheduled(cron = "0 30 8 * * *")
+//    @Scheduled(fixedRate = 10000)
     private void sendTaskForToday() throws MessagingException {
         List<User> users = userService.getAllUsers();
         for (User user : users) {

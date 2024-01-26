@@ -11,6 +11,7 @@ import com.taskssystem.model.User;
 import com.taskssystem.repository.ReminderRepository;
 import com.taskssystem.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -51,7 +52,8 @@ public class TaskService {
 
         List<Task> tasksForUserExcludingStatuses = taskRepository.findTasksForUserExcludingStatuses(user.getId(), List.of(TaskStatus.COMPLETED, TaskStatus.CANCELED));
 
-        if (tasksForUserExcludingStatuses.size() >= maxTasks && user.getSubscriptionLevel().equals(SubscriptionLevel.FREE)) {
+        if (tasksForUserExcludingStatuses.size() >= maxTasks
+                && user.getSubscriptionLevel().equals(SubscriptionLevel.FREE)) {
             throw new MaxTasksException();
         }
 
